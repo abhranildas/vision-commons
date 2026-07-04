@@ -37,4 +37,4 @@ addpath(fullfile(repo_root, 'vision-commons'));   % exposes vislib.*, nat_stat_b
 
 ## License
 
-CC-BY-NC 4.0 (matches the associated preprints).
+MIT License (see `LICENSE`).
