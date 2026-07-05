@@ -8,8 +8,8 @@ function img_lms = rgb2lms(img_rgb, rgb_to_lms)
 %
 %   The RGB->LMS matrix is a fixed, lab-global calibration. If not supplied it is
 %   loaded once (cached for the session) from the shared data store
-%   vislab_data/cps_rgb2lms.mat (variable `lms`) -- resolved as a sibling of the
-%   +vislab package. Pass rgb_to_lms explicitly to override (tests, alternative
+%   data/cps_rgb2lms.mat (variable `lms`) -- resolved inside vislab-common,
+%   alongside the +vislab package. Pass rgb_to_lms explicitly to override (tests, alternative
 %   calibrations). Callers should NOT load the matrix themselves; just call this.
 %
 %   Inputs
@@ -30,10 +30,10 @@ function img_lms = rgb2lms(img_rgb, rgb_to_lms)
 end
 
 function M = shared_rgb_to_lms()
-% Load the lab-global RGB->LMS calibration once, from vislab_data (sibling of +vislab).
+% Load the lab-global RGB->LMS calibration once, from data/ (alongside +vislab in vislab-common).
     persistent lms
     if isempty(lms)
-        f = fullfile(fileparts(mfilename('fullpath')), '..', '..', 'vislab_data', 'cps_rgb2lms.mat');
+        f = fullfile(fileparts(mfilename('fullpath')), '..', '..', 'data', 'cps_rgb2lms.mat');
         s = load(f, 'lms');
         lms = s.lms;
     end

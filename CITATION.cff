@@ -1,10 +1,10 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
-title: vislab
+title: vislab-common
 type: software
 authors:
   - family-names: Das
     given-names: Abhranil
     affiliation: "Center for Perceptual Systems, The University of Texas at Austin"
 license: MIT
-repository-code: "https://github.com/abhranildas/vislab"
+repository-code: "https://github.com/abhranildas/vislab-common"

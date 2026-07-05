@@ -8,3 +8,6 @@ octave-workspace
 .DS_Store
 Thumbs.db
 desktop.ini
+# Shared data store (~23 GB): natural images, texture sheets, colour transforms.
+# Obtained manually / synced via OneDrive -- never committed to git (too large for GitHub).
+/data/

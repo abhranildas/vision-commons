@@ -9,9 +9,9 @@ function img_out = apply_color_rotation(img, rotation)
 %   the output keeps the input's H x W. (Was rot.m.)
 %
 %   The rotation is lab-global. If not supplied it is loaded once (cached for the
-%   session) from the shared data store vislab_data/cps_lms2abr_otf.mat (variable
-%   `coeff`, the OTF-derived transform) -- resolved as a sibling of the +vislab
-%   package. Pass `rotation` explicitly to override: the non-OTF transform, tests,
+%   session) from the shared data store data/cps_lms2abr_otf.mat (variable
+%   `coeff`, the OTF-derived transform) -- resolved inside vislab-common, alongside
+%   the +vislab package. Pass `rotation` explicitly to override: the non-OTF transform, tests,
 %   or stage s1 (which *produces* the transform and so cannot load it). Callers
 %   should NOT load the matrix themselves; just call this.
 %
@@ -33,10 +33,10 @@ function img_out = apply_color_rotation(img, rotation)
 end
 
 function M = shared_lms_to_abr()
-% Load the lab-global LMS->ABR transform (OTF) once, from vislab_data (sibling of +vislab).
+% Load the lab-global LMS->ABR transform (OTF) once, from data/ (alongside +vislab in vislab-common).
     persistent coeff
     if isempty(coeff)
-        f = fullfile(fileparts(mfilename('fullpath')), '..', '..', 'vislab_data', 'cps_lms2abr_otf.mat');
+        f = fullfile(fileparts(mfilename('fullpath')), '..', '..', 'data', 'cps_lms2abr_otf.mat');
         s = load(f, 'coeff');
         coeff = s.coeff;
     end

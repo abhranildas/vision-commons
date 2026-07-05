@@ -1,11 +1,14 @@
-# vislab
+# vislab-common
 
-Shared MATLAB code for the Geisler Lab vision-science projects. Used by `texture-learning`,
-`texture-segmentation`, and `camouflage_detection` — kept as a **sibling folder** (`+vislab`) next to those
-repos (each project's `setup.m` auto-fetches it if it's missing), so the shared code lives in exactly one place.
+Shared resources for the Geisler Lab vision-science projects (`texture-learning`,
+`texture-segmentation`, `camouflage_detection`). Kept as a **sibling folder** (`vislab-common`) next to those
+repos (each project's `setup.m` auto-fetches it if it's missing), so the shared code and data live in exactly
+one place.
 
-This repo folder **is** the `+vislab` MATLAB package (it contains `+lib`, `+nat_stat_bayes`, `+psychframework`
-directly). On GitHub the repo is named `vislab`; clone it into a folder named `+vislab`.
+This repo contains two things:
+- **`+vislab/`** — the shared MATLAB namespace package (`+lib`, `+nat_stat_bayes`, `+psychframework`).
+- **`data/`** — the large (~23 GB) shared data store (natural images, texture sheets, colour transforms).
+  It is **not** in git (too large for GitHub); it is obtained separately / synced via OneDrive. See below.
 
 ## Package
 
@@ -25,25 +28,27 @@ own local `+lib` is a different, project-scoped `lib.*` namespace — distinct f
 
 ## Usage
 
-Because this folder **is** the `+vislab` package, put its **parent** directory on the MATLAB path (not the
-`+vislab` folder itself) so `vislab.*` resolves. Each consuming project ships a `setup.m` that does this,
-e.g. (`vislab_dir` = path to the `+vislab` folder):
+Put the directory that **contains** `+vislab` on the MATLAB path (i.e. this `vislab-common` folder, not the
+`+vislab` folder itself) so `vislab.*` resolves. Each consuming project ships a `setup.m` that does this:
 
 ```matlab
-addpath(fileparts(vislab_dir));   % exposes vislab.lib.*, vislab.nat_stat_bayes.*, vislab.psychframework.*
+addpath(vislab_common_dir);   % exposes vislab.lib.*, vislab.nat_stat_bayes.*, vislab.psychframework.*
 ```
 
-## Shared colour transforms (auto-loaded)
+## Shared data store (`data/`)
 
-The two lab-global colour transforms live in the shared data store `vislab_data/` (a sibling of this
-package) and are loaded automatically the first time they're used (cached thereafter) — **callers just
-call the function; they do not load the matrix**:
-- `vislab.lib.rgb2lms(img)` — camera-RGB → LMS, using `vislab_data/cps_rgb2lms.mat` (var `lms`).
-- `vislab.nat_stat_bayes.apply_color_rotation(patch)` — LMS → ABR, using `vislab_data/cps_lms2abr_otf.mat`
+The `data/` folder holds the large shared assets — natural images, texture sheets, and the two lab-global
+colour transforms. It is gitignored (never uploaded to GitHub) and is obtained manually / synced via
+OneDrive; place it at `vislab-common/data`.
+
+The two colour transforms are loaded automatically the first time they're used (cached thereafter) —
+**callers just call the function; they do not load the matrix**:
+- `vislab.lib.rgb2lms(img)` — camera-RGB → LMS, using `data/cps_rgb2lms.mat` (var `lms`).
+- `vislab.nat_stat_bayes.apply_color_rotation(patch)` — LMS → ABR, using `data/cps_lms2abr_otf.mat`
   (var `coeff`, the OTF-derived rotation produced by texture-learning stage 1).
 
 Each also accepts an optional explicit matrix to override the shared one (tests, the non-OTF transform, or
-the producing stage s1). This is the one place `vislab.*` reads from `vislab_data`.
+the producing stage s1). This is the one place `vislab.*` reads from `data/`.
 
 ## External dependencies
 
