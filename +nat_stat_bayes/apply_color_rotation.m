@@ -1,12 +1,12 @@
-function patch_out = apply_color_rotation(patch, rotation, patch_size)
-% APPLY_COLOR_ROTATION  Apply the lab-global LMS->ABR colour rotation to a patch.
-%   patch_out = vislab.nat_stat_bayes.apply_color_rotation(patch)                 % shared transform
-%   patch_out = vislab.nat_stat_bayes.apply_color_rotation(patch, rotation)       % supplied 3x3
-%   patch_out = vislab.nat_stat_bayes.apply_color_rotation(patch, rotation, patch_size)
+function img_out = apply_color_rotation(img, rotation)
+% APPLY_COLOR_ROTATION  Apply the lab-global LMS->ABR colour rotation.
+%   img_out = vislab.nat_stat_bayes.apply_color_rotation(img)            % shared transform
+%   img_out = vislab.nat_stat_bayes.apply_color_rotation(img, rotation)  % supplied 3x3
 %
 %   Rotates each pixel's colour vector by a 3x3 matrix, mapping LMS cone responses
 %   into the PCA/opponent "ABR" axes (achromatic, blue-yellow, red-green) learned
-%   from natural images. (Was rot.m.)
+%   from natural images. Works on any [H x W x 3] input (a patch or a full image);
+%   the output keeps the input's H x W. (Was rot.m.)
 %
 %   The rotation is lab-global. If not supplied it is loaded once (cached for the
 %   session) from the shared data store vislab_data/cps_lms2abr_otf.mat (variable
@@ -16,23 +16,20 @@ function patch_out = apply_color_rotation(patch, rotation, patch_size)
 %   should NOT load the matrix themselves; just call this.
 %
 %   Inputs
-%     patch      - [patch_size x patch_size x 3] colour patch.
-%     rotation   - (optional) 3x3 rotation/PCA matrix; loaded from the shared store if omitted.
-%     patch_size - (optional) patch side length in pixels; inferred from patch if omitted.
+%     img      - [H x W x 3] colour image/patch in LMS space.
+%     rotation - (optional) 3x3 rotation/PCA matrix; loaded from the shared store if omitted.
 %
 %   Output
-%     patch_out  - rotated patch, same size as patch.
+%     img_out  - rotated image, same H x W x 3 as the input.
 %
 %   See also VISLAB.LIB.RGB2LMS.
 
     if nargin < 2 || isempty(rotation)
         rotation = shared_lms_to_abr();
     end
-    if nargin < 3 || isempty(patch_size)
-        patch_size = size(patch, 1);
-    end
-    pixels = reshape(patch, [], 3) * rotation;
-    patch_out = reshape(pixels, patch_size, patch_size, 3);
+    [n_rows, n_cols, ~] = size(img);
+    pixels  = reshape(img, [], 3) * rotation;
+    img_out = reshape(pixels, n_rows, n_cols, 3);
 end
 
 function M = shared_lms_to_abr()
