@@ -1,8 +1,8 @@
 ﻿# vision-commons
 
-Shared MATLAB code for the Geisler Lab vision-science projects. Consumed as a **git submodule** by
-`texture-learning`, `texture-segmentation`, and `camouflage_detection`, so that common code lives in
-exactly one place.
+Shared MATLAB code for the Geisler Lab vision-science projects. Used by `texture-learning`,
+`texture-segmentation`, and `camouflage_detection` — kept as a **sibling folder** next to those repos
+(each project's `setup.m` auto-fetches it if it's missing), so the shared code lives in exactly one place.
 
 ## Packages
 

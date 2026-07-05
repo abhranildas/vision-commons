@@ -10,7 +10,7 @@ hub) and is referenced from each project's README.
    gx2  ────────────►  IntClassNorm  ─────────────────────────────────────┐
    (add-on toolbox)    (add-on toolbox: classify_normals, quad2fun)        │  used by the model code of
                                                                            ▼  all project repos
-                         vision-commons  (git submodule)
+                         vision-commons  (sibling folder)
                            +vislib          general vision / numerical utilities
                            +nat_stat_bayes  natural-scene-stats + Bayesian-observer DVs
                            +psychframework  Psychtoolbox experiment harness
@@ -35,7 +35,7 @@ hub) and is referenced from each project's README.
 Both are installed via the MATLAB **Add-On Explorer / File Exchange**. Project `setup.m` scripts only
 *verify* they are installed — they are never added as source paths or bundled.
 
-### vision-commons (this repo, a git submodule of each project)
+### vision-commons (this repo, a sibling folder next to each project)
 The single home for code shared across projects. MATLAB namespace packages (call as `pkg.function`):
 
 | Package | Purpose | Used by |
@@ -60,13 +60,13 @@ natural-image CDFs). Too large for git; each repo's `config.m` points at it via 
 
 ## Consumption model
 
-- **vision-commons = git submodule** of each project. Clone a project with
-  `git clone --recurse-submodules …`; `setup.m` puts the submodule on the path.
-  (GitHub "Download ZIP" omits submodule contents — releases attach a bundled zip that includes it.)
+- **vision-commons = a sibling folder** next to each project (one shared copy, not vendored inside
+  any repo). Each project's `setup.m` finds `../vision-commons`, and auto-clones it there if it's
+  missing (needs git + network) — so a standalone project clone works after running `setup`.
 - **IntClassNorm + gx2 = installed toolboxes** (see above).
 - **global_data = external**, referenced by config; not in git.
 
 ## Adding a new project
-1. Add `vision-commons` as a submodule.
+1. Ensure `vision-commons` sits next to the repo (each `setup.m` auto-fetches it if missing).
 2. Copy the `setup.m` / `config.m` pattern (path bootstrap + toolbox verification + data root).
 3. Put only project-specific code in the repo; call shared code as `vislib.*` / `nat_stat_bayes.*`.
