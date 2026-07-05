@@ -33,6 +33,18 @@ e.g. (`vislab_dir` = path to the `+vislab` folder):
 addpath(fileparts(vislab_dir));   % exposes vislab.lib.*, vislab.nat_stat_bayes.*, vislab.psychframework.*
 ```
 
+## Shared colour transforms (auto-loaded)
+
+The two lab-global colour transforms live in the shared data store `vislab_data/` (a sibling of this
+package) and are loaded automatically the first time they're used (cached thereafter) — **callers just
+call the function; they do not load the matrix**:
+- `vislab.lib.rgb2lms(img)` — camera-RGB → LMS, using `vislab_data/cps_rgb2lms.mat` (var `lms`).
+- `vislab.nat_stat_bayes.apply_color_rotation(patch)` — LMS → ABR, using `vislab_data/cps_lms2abr_otf.mat`
+  (var `coeff`, the OTF-derived rotation produced by texture-learning stage 1).
+
+Each also accepts an optional explicit matrix to override the shared one (tests, the non-OTF transform, or
+the producing stage s1). This is the one place `vislab.*` reads from `vislab_data`.
+
 ## External dependencies
 
 - [IntClassNorm](https://github.com/abhranildas/IntClassNorm)
