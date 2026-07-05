@@ -2,39 +2,58 @@ function [n_bins, bin_bounds] = load_bin_bounds(feature_btype, lev, filter)
 % LOAD_BIN_BOUNDS  Load per-feature adaptive-histogram bin bounds from disk.
 %   [n_bins, bin_bounds] = nat_stat_bayes.load_bin_bounds(feature_btype, lev, filter)
 %
-%   Loads the precomputed histogram bin bounds for each feature dimension.
-%   (Was mk_bb.m.) File naming: AHE<btype><feature><lev>.mat (filter == 0) or
-%   AHEO<btype><feature><lev>.mat (filter == 1, optics applied), each containing
-%   variables `bnds` and `nbnds`. The bound files must be on the MATLAB path
-%   (added by the project's setup.m / config).
+%   Loads the precomputed histogram bin bounds for each feature dimension. (Was
+%   mk_bb.m.) The bounds used to live in one file per feature/level
+%   (AHE(O)<btype><feature><lev>.mat); they are now kept in a SINGLE consolidated
+%   file that holds every feature and eccentricity level:
+%     * filter == 1 (optics applied):  AHEO_bins.mat
+%     * filter == 0 (no optics):       AHE_bins.mat
+%   written by s4_optimize_bins and placed on the MATLAB path by the project setup.
+%
+%   Consolidated-file contents (see also s4_optimize_bins):
+%     bin_bounds - cell, size [n_features x n_ecc]. bin_bounds{f,e} is the column
+%                  vector of bin edges for feature f at eccentricity column e
+%                  (empty [] if that feature/level was not trained).
+%     n_bins     - double [n_features x n_ecc]; n_bins(f,e) = numel(bin_bounds{f,e}).
+%     levels     - 1 x n_ecc; the eccentricity level (1,2,4,8) of each column e.
+%     btype      - bound type (5 = natural images).
 %
 %   Inputs
-%     feature_btype - vector; feature_btype(f) = bin type for feature f
-%                     (0 = skip that feature). Paper features are indexed 1-14.
-%     lev           - eccentricity downsample level (1, 2, 4, 8).
+%     feature_btype - vector; feature_btype(f) > 0 selects feature f (0 = skip it).
+%                     Paper features are indexed 1-14.
+%     lev           - eccentricity level (1,2,4,8); must appear in the file's `levels`.
 %     filter        - 1 if optics (OTF) applied when the bounds were trained, else 0.
 %
-%   Outputs
+%   Outputs (UNCHANGED from the per-file version -- callers are unaffected)
 %     n_bins     - 1 x n_features vector of the number of bin bounds per feature.
 %     bin_bounds - n_features x max_bins matrix; row f holds bin_bounds(f,1:n_bins(f)).
 %
 %   See also NAT_STAT_BAYES.DV_SPOT_HIST, NAT_STAT_BAYES.DV_EDGE_HIST.
 
-    max_bins = 100;
+    if filter == 0
+        file = 'AHE_bins.mat';
+    else
+        file = 'AHEO_bins.mat';
+    end
+    S = load(file, 'bin_bounds', 'n_bins', 'levels');
+
+    ecc = find(S.levels == lev, 1);
+    if isempty(ecc)
+        error('nat_stat_bayes:load_bin_bounds:noLevel', ...
+            'No bin bounds for eccentricity level %d in %s (available levels: %s).', ...
+            lev, file, mat2str(S.levels));
+    end
+
     n_features = numel(feature_btype);
+    max_bins   = max(100, max(S.n_bins(:)));   % output width; callers read only 1:n_bins(f)
     bin_bounds = zeros(n_features, max_bins);
-    n_bins = zeros(1, n_features);
+    n_bins     = zeros(1, n_features);
 
     for f = 1:n_features
         if feature_btype(f) > 0
-            if filter == 0
-                name = sprintf('AHE%d%d%d.mat', feature_btype(f), f, lev);
-            else
-                name = sprintf('AHEO%d%d%d.mat', feature_btype(f), f, lev);
-            end
-            s = load(name, 'bnds', 'nbnds');
-            n_bins(f) = s.nbnds;
-            bin_bounds(f, 1:s.nbnds) = s.bnds;
+            b = S.bin_bounds{f, ecc};
+            n_bins(f) = numel(b);
+            bin_bounds(f, 1:numel(b)) = b(:).';
         end
     end
 end
