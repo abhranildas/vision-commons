@@ -1,4 +1,4 @@
-﻿# MATLAB
+# MATLAB
 *.asv
 *.m~
 *.mex*
@@ -17,3 +17,19 @@ desktop.ini
 !/data/textures/
 # ...except the ~3.7 GB derived CDFs, which is too large for git:
 /data/nat_im_cdfs.mat
+
+# Unignore a small subset of the natural images (first 4 of each set) for the demo
+!/data/CPS natural images/
+/data/CPS natural images/*
+!/data/CPS natural images/Set9_16_1.png
+!/data/CPS natural images/Set9_16_2.png
+!/data/CPS natural images/Set9_16_3.png
+!/data/CPS natural images/Set9_16_4.png
+!/data/CPS natural images/Set10_16_1.png
+!/data/CPS natural images/Set10_16_2.png
+!/data/CPS natural images/Set10_16_3.png
+!/data/CPS natural images/Set10_16_4.png
+!/data/CPS natural images/Set12_16_1.png
+!/data/CPS natural images/Set12_16_2.png
+!/data/CPS natural images/Set12_16_3.png
+!/data/CPS natural images/Set12_16_4.png
