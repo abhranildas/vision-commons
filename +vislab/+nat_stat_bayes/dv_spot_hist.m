@@ -28,11 +28,12 @@ function spot_llr = dv_spot_hist(abr_a, abr_b, patch_size, bin_bounds, n_bins, f
 
     spot_llr = zeros(1, numel(feature_list));
     npix = patch_size^2;
-    px_a = reshape(abr_a, [], 3);
-    px_b = reshape(abr_b, [], 3);
+    nch  = size(abr_a, 3);          % 3 for ABR patches, 1 for achromatic-only (A) patches
+    px_a = reshape(abr_a, [], nch);
+    px_b = reshape(abr_b, [], nch);
 
-    % pixel channels 1-3 (A, B, R)
-    for k = 1:3
+    % pixel channels (A, B, R); only channel 1 (A) is present for 1-channel input
+    for k = 1:min(3, nch)
         if feature_list(k) == 1
             N1 = histcounts(px_a(1:npix, k), bin_bounds(k, 1:n_bins(k)));
             N2 = histcounts(px_b(1:npix, k), bin_bounds(k, 1:n_bins(k)));
